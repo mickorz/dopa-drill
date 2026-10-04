@@ -1,78 +1,301 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="1024" height="1024" viewBox="267 306 1300 1300" role="img" aria-labelledby="title desc">
-  <title id="title">ドパキチ — 左右対称・正面目</title>
-  <desc id="desc">左右対称のベクタードロー版。正面を向くピンクの目と下がった丸い手。頭と胴の高さ約1.6:1、幅約2:1、胴とおなかの最大幅約1.618:1。均一な細い輪郭線、正方形、透過背景、部位別レイヤー。 眉は水平の短い楕円。</desc>
-  <metadata>Palette: pink #FF97BF; cream #FFF3E4; pale pink #FFE6F0; blue #2F79F7; outline #000000. Every visible stroke is 4.5 viewBox units (3.545 pixels at the nominal 1024-pixel size). No embedded bitmap, filters, or animation. Nested SVG groups use stable IDs. data-pivot stores animation origin in viewBox coordinates. Head and body meet without a drawn neck seam; their fills overlap. Major poses may need adjustment of the joining contours.</metadata>
-  <defs>
-    <style>.line{stroke:#000;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}</style>
-  </defs>
-  <g id="foot-left" inkscape:groupmode="layer" inkscape:label="01 左足" data-pivot="814 1282">
-    <path class="line" fill="#2F79F7" d="M810 1267 C779 1267 761 1281 735 1307 C713 1329 701 1343 718 1357 C742 1378 783 1376 816 1359 C850 1343 870 1319 850 1288 C840 1272 827 1267 810 1267Z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+<title id="title">甜甜 — 白色布偶猫 V5 精修（耳朵层级优化）</title>
+<desc id="desc">纯矢量可编辑 SVG。V5 在 V4 基础上修复耳朵层级与遮挡关系，优化耳内毛束的可见区域和耳根衔接，同时保留蓝眼、短胖身体与蓬松灰尾。</desc>
+<defs>
+  <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fffefd"/><stop offset="1" stop-color="#fff7f4"/>
+  </linearGradient>
+  <linearGradient id="furShade" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f8eeee"/><stop offset="1" stop-color="#eadcda"/>
+  </linearGradient>
+  <linearGradient id="point" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#d9cecf"/><stop offset="1" stop-color="#b9aaac"/>
+  </linearGradient>
+  <linearGradient id="tail" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#eee5e4"/><stop offset=".55" stop-color="#d6c7c9"/><stop offset="1" stop-color="#b6a6a9"/>
+  </linearGradient>
+  <radialGradient id="iris" cx="34%" cy="28%" r="76%">
+    <stop offset="0" stop-color="#c9e4ff"/><stop offset=".38" stop-color="#78b5ff"/><stop offset=".72" stop-color="#4381da"/><stop offset="1" stop-color="#244e91"/>
+  </radialGradient>
+  <linearGradient id="bow" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffc4d4"/><stop offset="1" stop-color="#ed8eab"/>
+  </linearGradient>
+  <radialGradient id="bell" cx="32%" cy="22%" r="78%">
+    <stop offset="0" stop-color="#fff7bd"/><stop offset=".45" stop-color="#ffd773"/><stop offset="1" stop-color="#d79a35"/>
+  </radialGradient>
+  <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="eyeGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.5"/></filter>
+  <clipPath id="earLeftClip">
+    <path d="M288 367 C277 293 282 193 322 121 C338 92 361 86 388 106 C420 130 454 159 477 188 C438 207 403 241 378 288 C356 329 332 359 288 367Z"/>
+  </clipPath>
+  <clipPath id="earRightClip">
+    <path d="M736 367 C747 293 742 193 702 121 C686 92 663 86 636 106 C604 130 570 159 547 188 C586 207 621 241 646 288 C668 329 692 359 736 367Z"/>
+  </clipPath>
+  <style>
+    .outline{stroke:#744947;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+    .mid{stroke:#744947;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}
+    .softline{stroke:#b39a99;stroke-width:3.1;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .furline{stroke:#dfd2d0;stroke-width:2.5;stroke-linecap:round;fill:none;opacity:.68}
+  </style>
+</defs>
+
+<!-- subtle ground -->
+<ellipse cx="515" cy="925" rx="348" ry="26" fill="#bda6a4" opacity=".18" filter="url(#soft)"/>
+
+<!-- tail -->
+<g id="tail">
+  <path class="outline" fill="url(#tail)" d="M337 720
+    C278 696 211 707 154 744
+    C98 781 66 838 78 888
+    C90 938 145 961 207 954
+    C267 948 322 916 357 865
+    C385 824 401 768 384 740
+    C374 725 358 718 337 720Z"/>
+  <path fill="#f6efee" opacity=".55" d="M113 803 C157 754 228 730 300 744 C245 756 195 786 161 833 C145 855 126 844 113 803Z"/>
+  <path fill="#cdbfc0" opacity=".48" d="M104 895 C153 925 209 921 258 896 C226 923 187 939 150 936 C126 933 111 919 104 895Z"/>
+  <path class="furline" d="M120 789 C160 772 201 766 244 771 M99 836 C148 813 202 807 250 817 M99 884 C149 861 201 858 247 869 M128 925 C167 907 205 903 239 907"/>
+</g>
+
+<!-- body base -->
+<g id="body">
+  <path class="outline" fill="url(#fur)" d="M347 676
+    C320 696 301 738 299 792
+    C296 846 315 892 360 917
+    C397 939 449 943 512 943
+    C575 943 627 939 664 917
+    C709 892 728 846 725 792
+    C723 738 704 696 677 676
+    C640 647 594 636 512 636
+    C430 636 384 647 347 676Z"/>
+  <path fill="#f4e7e5" opacity=".58" d="M326 761 C344 714 373 689 414 676 C390 713 383 753 389 798 C362 792 341 779 326 761Z"/>
+  <path fill="#f4e7e5" opacity=".58" d="M698 761 C680 714 651 689 610 676 C634 713 641 753 635 798 C662 792 683 779 698 761Z"/>
+</g>
+
+<!-- ears, wider/rounder, with corrected layering -->
+<g id="ears">
+  <!-- left ear shell behind head -->
+  <path id="ear-left-outer" class="outline" fill="url(#fur)" d="M288 367
+    C277 293 282 193 322 121
+    C338 92 361 86 388 106
+    C420 130 454 159 477 188
+    C438 207 403 241 378 288
+    C356 329 332 359 288 367Z"/>
+  <g id="ear-left-inner" clip-path="url(#earLeftClip)">
+    <path fill="url(#point)" d="M311 291 C316 226 329 164 351 124 C360 109 371 109 386 119 L438 169 C397 175 353 216 311 291Z" opacity=".98"/>
+    <path class="mid" fill="#ffb7c6" d="M330 270 C338 219 347 179 361 151 C368 138 376 141 387 150 L414 175 C381 183 352 215 330 270Z"/>
+    <path fill="#fffdfa" d="M337 210 C357 193 375 184 394 181 C379 196 366 214 358 236 C351 227 344 218 337 210Z"/>
+    <path fill="#fffaf8" opacity=".96" d="M319 326 C331 300 351 272 372 249 C392 229 411 214 428 205 C404 228 385 258 370 293 C356 323 344 347 333 364 C327 352 323 339 319 326Z"/>
   </g>
-  <g id="foot-right" inkscape:groupmode="layer" inkscape:label="02 右足" data-pivot="1020 1282">
-    <path class="line" fill="#2F79F7" d="M810 1267 C779 1267 761 1281 735 1307 C713 1329 701 1343 718 1357 C742 1378 783 1376 816 1359 C850 1343 870 1319 850 1288 C840 1272 827 1267 810 1267Z" transform="translate(1834 0) scale(-1 1)"/>
+
+  <!-- right ear shell behind head -->
+  <path id="ear-right-outer" class="outline" fill="url(#fur)" d="M736 367
+    C747 293 742 193 702 121
+    C686 92 663 86 636 106
+    C604 130 570 159 547 188
+    C586 207 621 241 646 288
+    C668 329 692 359 736 367Z"/>
+  <g id="ear-right-inner" clip-path="url(#earRightClip)">
+    <path fill="url(#point)" d="M713 291 C708 226 695 164 673 124 C664 109 653 109 638 119 L586 169 C627 175 671 216 713 291Z" opacity=".98"/>
+    <path class="mid" fill="#ffb7c6" d="M694 270 C686 219 677 179 663 151 C656 138 648 141 637 150 L610 175 C643 183 672 215 694 270Z"/>
+    <path fill="#fffdfa" d="M687 210 C667 193 649 184 630 181 C645 196 658 214 666 236 C673 227 680 218 687 210Z"/>
+    <path fill="#fffaf8" opacity=".96" d="M705 326 C693 300 673 272 652 249 C632 229 613 214 596 205 C620 228 639 258 654 293 C668 323 680 347 691 364 C697 352 701 339 705 326Z"/>
   </g>
-  <g id="arm-left" inkscape:groupmode="layer" inkscape:label="03 左腕と手" data-pivot="774 1096">
-    <g id="arm-left-shape" inkscape:groupmode="layer" inkscape:label="腕">
-      <path class="line" fill="#FF97BF" d="M774 1083 C750 1097 728 1115 711 1135 L734 1153 C750 1134 767 1119 784 1110Z"/>
-    </g>
-    <g id="hand-left" inkscape:groupmode="layer" inkscape:label="手" data-pivot="707 1137">
-      <ellipse class="line" fill="#FF97BF" cx="707" cy="1177" rx="54" ry="55"/></g>
+</g>
+
+<!-- small ear-base covers to clean overlaps -->
+<g id="ear-base-covers">
+  <path fill="url(#fur)" d="M318 345 C339 321 368 303 394 300 C371 320 356 343 348 370 C337 363 327 355 318 345Z" opacity=".94"/>
+  <path fill="url(#fur)" d="M706 345 C685 321 656 303 630 300 C653 320 668 343 676 370 C687 363 697 355 706 345Z" opacity=".94"/>
+</g>
+
+<!-- head: smoother fluffy silhouette -->
+<g id="head">
+  <path class="outline" fill="url(#fur)" d="M251 347
+    C226 360 211 379 207 402
+    C189 407 177 421 180 438
+    C188 436 197 436 205 439
+    C184 452 173 471 178 488
+    C189 482 199 481 210 485
+    C187 503 178 526 185 545
+    C197 535 209 532 221 537
+    C198 557 194 585 206 605
+    C217 592 231 587 244 591
+    C227 614 231 640 247 656
+    C260 642 273 638 286 642
+    C272 666 283 692 304 704
+    C316 688 329 683 342 687
+    C335 709 352 728 373 731
+    C384 716 398 711 412 714
+    C415 734 433 748 453 743
+    C466 728 481 723 494 728
+    C500 744 506 752 512 755
+    C518 752 524 744 530 728
+    C543 723 558 728 571 743
+    C591 748 609 734 612 714
+    C626 711 640 716 651 731
+    C672 728 689 709 682 687
+    C695 683 708 688 720 704
+    C741 692 752 666 738 642
+    C751 638 764 642 777 656
+    C793 640 797 614 780 591
+    C793 587 807 592 818 605
+    C830 585 826 557 803 537
+    C815 532 827 535 839 545
+    C846 526 837 503 814 485
+    C825 481 835 482 846 488
+    C851 471 840 452 819 439
+    C827 436 836 436 844 438
+    C847 421 835 407 817 402
+    C813 379 798 360 773 347
+    C757 326 736 312 709 306
+    C701 282 686 269 665 269
+    C668 286 664 299 652 311
+    C635 276 608 253 575 247
+    C575 224 565 207 547 196
+    C546 216 536 229 522 236
+    C519 218 516 206 512 198
+    C508 206 505 218 502 236
+    C488 229 478 216 477 196
+    C459 207 449 224 449 247
+    C416 253 389 276 372 311
+    C360 299 356 286 359 269
+    C338 269 323 282 315 306
+    C288 312 267 326 251 347Z"/>
+
+  <!-- side fur masses -->
+  <path fill="#f4e8e6" opacity=".62" d="M215 452 C245 420 288 409 333 420 C297 437 273 463 259 496 C242 488 226 474 215 452Z"/>
+  <path fill="#f4e8e6" opacity=".62" d="M809 452 C779 420 736 409 691 420 C727 437 751 463 765 496 C782 488 798 474 809 452Z"/>
+  <path fill="#f3e7e5" opacity=".68" d="M252 590 C282 570 319 567 352 581 C325 589 302 604 285 625 C271 616 260 604 252 590Z"/>
+  <path fill="#f3e7e5" opacity=".68" d="M772 590 C742 570 705 567 672 581 C699 589 722 604 739 625 C753 616 764 604 772 590Z"/>
+
+  <!-- ragdoll forehead point -->
+  <path fill="#d8cecf" opacity=".78" d="M392 279 C430 242 470 238 512 257 C554 238 594 242 632 279
+    C597 278 567 296 548 327
+    C535 349 523 369 512 387
+    C501 369 489 349 476 327
+    C457 296 427 278 392 279Z"/>
+  <path fill="#c7b9bb" opacity=".5" d="M471 254 C487 243 502 240 512 243 C522 240 537 243 553 254 C537 272 523 291 512 316 C501 291 487 272 471 254Z"/>
+
+  <!-- eyebrow spots -->
+  <path fill="#eadfdd" opacity=".78" d="M394 343 C401 331 413 331 420 342 C426 352 422 365 408 375 C394 365 388 353 394 343Z"/>
+  <path fill="#eadfdd" opacity=".78" d="M630 343 C623 331 611 331 604 342 C598 352 602 365 616 375 C630 365 636 353 630 343Z"/>
+
+  <!-- fur detail ribbons -->
+  <path class="furline" d="M218 478 C249 461 277 458 302 466 M210 522 C242 506 274 504 304 516 M223 569 C254 553 286 553 315 564 M247 620 C272 608 295 609 315 620"/>
+  <path class="furline" d="M806 478 C775 461 747 458 722 466 M814 522 C782 506 750 504 720 516 M801 569 C770 553 738 553 709 564 M777 620 C752 608 729 609 709 620"/>
+</g>
+
+<!-- face -->
+<g id="face">
+  <!-- upper lashes -->
+  <path fill="#533b3c" d="M326 442 C350 414 390 404 431 418 C448 424 461 434 470 448 C447 433 427 427 405 427 C426 434 442 445 454 459 C422 439 387 438 355 452 C344 449 334 446 326 442Z"/>
+  <path fill="#533b3c" transform="translate(1024 0) scale(-1 1)" d="M326 442 C350 414 390 404 431 418 C448 424 461 434 470 448 C447 433 427 427 405 427 C426 434 442 445 454 459 C422 439 387 438 355 452 C344 449 334 446 326 442Z"/>
+
+  <!-- eyes -->
+  <g id="eye-left">
+    <ellipse class="mid" fill="#fff" cx="402" cy="503" rx="72" ry="82"/>
+    <ellipse fill="url(#iris)" cx="405" cy="509" rx="59" ry="69"/>
+    <ellipse fill="#244a83" cx="410" cy="520" rx="34" ry="45"/>
+    <ellipse fill="#163663" cx="411" cy="523" rx="25" ry="35" opacity=".62"/>
+    <circle fill="#fff" cx="382" cy="469" r="19"/>
+    <circle fill="#fff" cx="430" cy="524" r="9.5" opacity=".96"/>
+    <ellipse fill="#95c8ff" opacity=".46" cx="404" cy="552" rx="31" ry="10"/>
+    <circle fill="#bce0ff" opacity=".72" cx="390" cy="552" r="10"/>
+    <circle fill="#bce0ff" opacity=".72" cx="409" cy="555" r="12"/>
   </g>
-  <g id="arm-right" inkscape:groupmode="layer" inkscape:label="04 右腕と手" data-pivot="1060 1096">
-    <g id="arm-right-shape" inkscape:groupmode="layer" inkscape:label="腕">
-      <path class="line" fill="#FF97BF" d="M1060 1083 C1084 1097 1106 1115 1123 1135 L1100 1153 C1084 1134 1067 1119 1050 1110Z"/>
-    </g>
-    <g id="hand-right" inkscape:groupmode="layer" inkscape:label="手" data-pivot="1127 1137">
-      <ellipse class="line" fill="#FF97BF" cx="1127" cy="1177" rx="54" ry="55"/></g>
+  <g id="eye-right">
+    <ellipse class="mid" fill="#fff" cx="622" cy="503" rx="72" ry="82"/>
+    <ellipse fill="url(#iris)" cx="619" cy="509" rx="59" ry="69"/>
+    <ellipse fill="#244a83" cx="614" cy="520" rx="34" ry="45"/>
+    <ellipse fill="#163663" cx="613" cy="523" rx="25" ry="35" opacity=".62"/>
+    <circle fill="#fff" cx="642" cy="469" r="19"/>
+    <circle fill="#fff" cx="594" cy="524" r="9.5" opacity=".96"/>
+    <ellipse fill="#95c8ff" opacity=".46" cx="620" cy="552" rx="31" ry="10"/>
+    <circle fill="#bce0ff" opacity=".72" cx="634" cy="552" r="10"/>
+    <circle fill="#bce0ff" opacity=".72" cx="615" cy="555" r="12"/>
   </g>
-  <g id="body" inkscape:groupmode="layer" inkscape:label="05 胴体とおなか" data-pivot="917 1130">
-    <g id="body-shape" inkscape:groupmode="layer" inkscape:label="胴体">
-      <!-- Upper fill extends beneath the head; the neck has no cross-stroke. -->
-      <path fill="#FF97BF" d="M709 1005 C752 1031 777 1069 777 1110 C777 1145 757 1174 757 1212 C757 1268 802 1295 857 1295 L977 1295 C1032 1295 1077 1268 1077 1212 C1077 1174 1057 1145 1057 1110 C1057 1069 1082 1031 1125 1005 L1125 952 L709 952Z"/>
-      <path class="line" fill="none" d="M709 1005 C752 1031 777 1069 777 1110 C777 1145 757 1174 757 1212 C757 1268 802 1295 857 1295 L977 1295 C1032 1295 1077 1268 1077 1212 C1077 1174 1057 1145 1057 1110 C1057 1069 1082 1031 1125 1005"/>
-    </g>
-    <g id="belly" inkscape:groupmode="layer" inkscape:label="おなか">
-      <ellipse class="line" fill="#FFF3E4" cx="917" cy="1192" rx="98.8854382" ry="75"/></g>
-  </g>
-  <g id="head" inkscape:groupmode="layer" inkscape:label="06 頭・耳・表情" data-pivot="917 1005">
-    <g id="ear-left" inkscape:groupmode="layer" inkscape:label="左耳" data-pivot="625 785">
-      <ellipse class="line" fill="#FF97BF" cx="505" cy="785" rx="172" ry="174"/><g id="ear-left-inner" inkscape:groupmode="layer" inkscape:label="内側">
-        <ellipse class="line" fill="#FFE6F0" cx="505" cy="785" rx="117" ry="122"/></g>
-    </g>
-    <g id="ear-right" inkscape:groupmode="layer" inkscape:label="右耳" data-pivot="1209 785">
-      <ellipse class="line" fill="#FF97BF" cx="1329" cy="785" rx="172" ry="174"/><g id="ear-right-inner" inkscape:groupmode="layer" inkscape:label="内側">
-        <ellipse class="line" fill="#FFE6F0" cx="1329" cy="785" rx="117" ry="122"/></g>
-    </g>
-    <g id="head-shape" inkscape:groupmode="layer" inkscape:label="頭の輪郭">
-      <path fill="#FF97BF" d="M709 1005 C641 964 604 914 604 823 C604 650 734 541 917 541 C1100 541 1230 650 1230 823 C1230 914 1193 964 1125 1005 L917 980Z"/>
-      <path class="line" fill="none" d="M709 1005 C641 964 604 914 604 823 C604 650 734 541 917 541 C1100 541 1230 650 1230 823 C1230 914 1193 964 1125 1005"/>
-    </g>
-    <g id="face" inkscape:groupmode="layer" inkscape:label="顔・クリーム">
-      <path class="line" fill="#FFF3E4" d="M917 631 C1082 631 1185 694 1185 834 C1185 974 1060 1030 917 1030 C774 1030 649 974 649 834 C649 694 752 631 917 631Z"/>
-    </g>
-    <g id="eye-left" inkscape:groupmode="layer" inkscape:label="左目" data-pivot="787 849">
-      <g id="eye-left-white" inkscape:groupmode="layer" inkscape:label="白い外側">
-        <ellipse class="line" fill="#FFF" cx="787" cy="849" rx="62" ry="62"/></g>
-      <g id="eye-left-pink" inkscape:groupmode="layer" inkscape:label="ピンクの内側">
-        <ellipse class="line" fill="#FF97BF" cx="787" cy="849" rx="48" ry="48"/></g>
-    </g>
-    <g id="eye-right" inkscape:groupmode="layer" inkscape:label="右目" data-pivot="1047 849">
-      <g id="eye-right-white" inkscape:groupmode="layer" inkscape:label="白い外側">
-        <ellipse class="line" fill="#FFF" cx="1047" cy="849" rx="62" ry="62"/></g>
-      <g id="eye-right-pink" inkscape:groupmode="layer" inkscape:label="ピンクの内側">
-        <ellipse class="line" fill="#FF97BF" cx="1047" cy="849" rx="48" ry="48"/></g>
-    </g>
-    <g id="brow-left" inkscape:groupmode="layer" inkscape:label="左まゆ">
-      <ellipse class="line" fill="#FF97BF" cx="842" cy="752" rx="17" ry="10"/></g>
-    <g id="brow-right" inkscape:groupmode="layer" inkscape:label="右まゆ">
-      <ellipse class="line" fill="#FF97BF" cx="992" cy="752" rx="17" ry="10"/></g>
-    <g id="cheeks" inkscape:groupmode="layer" inkscape:label="ほっぺ">
-      <ellipse fill="#FFE6F0" cx="747" cy="934" rx="24" ry="15"/>
-      <ellipse fill="#FFE6F0" cx="1087" cy="934" rx="24" ry="15"/>
-    </g>
-    <g id="mouth" inkscape:groupmode="layer" inkscape:label="口">
-      <path class="line" fill="none" d="M872 924 C890 948 944 948 962 924"/>
-    </g>
-  </g>
+
+  <!-- blush -->
+  <ellipse cx="314" cy="574" rx="47" ry="24" fill="#ffc7d3" opacity=".52" filter="url(#eyeGlow)"/>
+  <ellipse cx="710" cy="574" rx="47" ry="24" fill="#ffc7d3" opacity=".52" filter="url(#eyeGlow)"/>
+  <path stroke="#f2a9b8" stroke-width="3" opacity=".62" d="M283 570 l13 -16 M300 576 l13 -16 M317 581 l13 -16 M681 570 l13 -16 M698 576 l13 -16 M715 581 l13 -16"/>
+
+  <!-- nose & mouth -->
+  <path class="mid" fill="#f6a1b2" d="M495 553 C504 546 520 546 529 553 C525 565 518 571 512 571 C506 571 499 565 495 553Z"/>
+  <path class="mid" fill="none" d="M512 571 C510 583 500 590 488 590 C481 590 476 586 474 580 M512 571 C514 583 524 590 536 590 C543 590 548 586 550 580"/>
+  <path class="mid" fill="#f298ad" d="M481 590 C490 601 501 606 512 606 C523 606 534 601 543 590 C543 620 531 640 512 640 C493 640 481 620 481 590Z"/>
+  <ellipse cx="512" cy="619" rx="20" ry="11" fill="#ffc2cf" opacity=".78"/>
+
+  <!-- whiskers -->
+  <path class="softline" d="M337 550 C303 540 278 541 246 547 M339 573 C302 570 272 576 242 586 M340 595 C306 601 282 612 258 626"/>
+  <path class="softline" d="M687 550 C721 540 746 541 778 547 M685 573 C722 570 752 576 782 586 M684 595 C718 601 742 612 766 626"/>
+</g>
+
+<!-- chest fluff: more layered -->
+<g id="chest-fluff" transform="translate(0 22)">
+  <path class="outline" fill="url(#fur)" d="M332 650
+    C349 622 381 608 412 613
+    C423 596 441 591 456 601
+    C470 586 489 588 502 602
+    C506 591 510 584 512 582
+    C514 584 518 591 522 602
+    C535 588 554 586 568 601
+    C583 591 601 596 612 613
+    C643 608 675 622 692 650
+    C678 665 661 670 646 669
+    C653 690 641 709 622 716
+    C625 738 608 754 587 754
+    C584 774 566 786 546 779
+    C538 794 525 806 512 813
+    C499 806 486 794 478 779
+    C458 786 440 774 437 754
+    C416 754 399 738 402 716
+    C383 709 371 690 378 669
+    C363 670 346 665 332 650Z"/>
+  <path fill="#f5e9e7" opacity=".55" d="M381 659 C408 642 435 642 458 656 C431 658 409 670 394 688 C389 677 385 668 381 659Z"/>
+  <path fill="#f5e9e7" opacity=".55" d="M643 659 C616 642 589 642 566 656 C593 658 615 670 630 688 C635 677 639 668 643 659Z"/>
+  <path class="furline" d="M397 667 C419 654 441 654 460 665 M627 667 C605 654 583 654 564 665 M449 718 C470 704 491 705 512 718 M575 718 C554 704 533 705 512 718"/>
+</g>
+
+<!-- bow -->
+<g id="bow" transform="translate(0 10)">
+  <path class="outline" fill="url(#bow)" d="M503 690 C466 653 411 642 378 661 C350 677 353 718 383 741 C417 766 462 752 503 718Z"/>
+  <path class="outline" fill="url(#bow)" d="M521 690 C558 653 613 642 646 661 C674 677 671 718 641 741 C607 766 562 752 521 718Z"/>
+  <path class="outline" fill="#f29ab5" d="M477 727 L433 799 L477 781 L510 816 L508 717Z"/>
+  <path class="outline" fill="#f29ab5" d="M547 727 L591 799 L547 781 L514 816 L516 717Z"/>
+  <ellipse fill="#d96b8e" opacity=".30" cx="427" cy="699" rx="27" ry="10" transform="rotate(14 427 699)"/>
+  <ellipse fill="#d96b8e" opacity=".30" cx="597" cy="699" rx="27" ry="10" transform="rotate(-14 597 699)"/>
+  <circle class="mid" fill="url(#bell)" cx="512" cy="704" r="41"/>
+  <path fill="none" stroke="#d09131" stroke-width="5" d="M478 700 Q512 685 546 700"/>
+  <circle fill="#fff9d1" cx="499" cy="688" r="8.5"/>
+  <circle fill="#5a4040" cx="512" cy="718" r="8"/>
+  <path stroke="#5a4040" stroke-width="5" stroke-linecap="round" d="M512 724 L512 740"/>
+</g>
+
+<!-- side haunches -->
+<g id="haunches">
+  <path class="outline" fill="url(#fur)" d="M347 788 C314 797 295 826 302 865 C309 904 344 927 389 918 C421 911 433 881 416 845 C400 813 374 781 347 788Z"/>
+  <path class="outline" fill="url(#fur)" d="M677 788 C710 797 729 826 722 865 C715 904 680 927 635 918 C603 911 591 881 608 845 C624 813 650 781 677 788Z"/>
+</g>
+
+<!-- front legs, shorter -->
+<g id="front-legs">
+  <path class="outline" fill="url(#fur)" d="M405 760 C378 783 368 823 376 858 C385 897 410 918 438 910 C463 903 471 877 466 845 C459 807 438 773 405 760Z"/>
+  <path class="outline" fill="url(#fur)" d="M619 760 C646 783 656 823 648 858 C639 897 614 918 586 910 C561 903 553 877 558 845 C565 807 586 773 619 760Z"/>
+  <path class="furline" d="M391 811 C405 797 421 794 435 801 M633 811 C619 797 603 794 589 801"/>
+</g>
+
+<!-- compact front paws -->
+<g id="front-paws">
+  <path class="outline" fill="#fffdfb" d="M425 861 C402 869 397 901 414 919 C430 936 462 935 480 919 C491 909 486 879 468 869 C452 860 438 857 425 861Z"/>
+  <path class="outline" fill="#fffdfb" d="M599 861 C622 869 627 901 610 919 C594 936 562 935 544 919 C533 909 538 879 556 869 C572 860 586 857 599 861Z"/>
+  <path class="furline" d="M431 904 C441 895 450 894 458 902 M566 902 C574 894 583 895 593 904"/>
+</g>
+
+<!-- toe hints -->
+<g id="toe-details" opacity=".55">
+  <path class="softline" d="M430 915 Q437 904 444 916 M451 916 Q458 904 465 916 M559 916 Q566 904 573 916 M580 916 Q587 904 594 915"/>
+</g>
+
 </svg>
