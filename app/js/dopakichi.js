@@ -7,7 +7,8 @@ const NS = 'http://www.w3.org/2000/svg';
 export const INK = '#000';
 const CREAM = '#fff3e4';
 export const PALETTES = {
-  pink: { body: '#ff97bf', inner: '#ffe6f0', leg: '#2f79f7', cheek: '#ffe6f0' },
+  // The base look is a white plush kitten; the key stays 'pink' for save data.
+  pink: { body: '#fdf8f2', inner: '#ffd7e4', leg: '#ffb3c9', cheek: '#ffd9e4', iris: '#e8a04c' },
   blue: { body: '#6fa0ff', inner: '#dde8ff', leg: '#ff97bf', cheek: '#ffd6e6' },
   yellow: { body: '#ffd452', inner: '#fff3c4', leg: '#2f79f7', cheek: '#ffd9c2' },
   mint: { body: '#5eddb8', inner: '#d6f8ec', leg: '#7b5cff', cheek: '#ffd6e6' },
@@ -45,8 +46,8 @@ const F = 'class="dk-f"';
 // Eye rings use a thinner line so the white ring stays visible, as in the drawing.
 const T = 'class="dk-t"';
 const EYE = {
-  open: (p) => `<circle r="11.2" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="8.6" fill="${p.body}"/>`,
-  wide: (p) => `<circle r="12.4" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="5" fill="${p.body}"/>`,
+  open: (p) => `<circle r="11.2" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="8.6" fill="${p.iris || p.body}"/>`,
+  wide: (p) => `<circle r="12.4" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="5" fill="${p.iris || p.body}"/>`,
   happy: () => `<path d="M-9 3 Q0 -10 9 3" fill="none" ${F}/>`,
   closed: () => `<path d="M-9 -1 Q0 7 9 -1" fill="none" ${F}/>`,
   x: () => `<path d="M-7 -7 L7 7 M7 -7 L-7 7" fill="none" ${F}/>`,
@@ -81,7 +82,13 @@ export const G = {
   face: 'M0 -133 C29.7 -133 48.2 -121.7 48.2 -96.5 C48.2 -71.3 25.7 -61.2 0 -61.2 C-25.7 -61.2 -48.2 -71.3 -48.2 -96.5 C-48.2 -121.7 -29.7 -133 0 -133Z',
   head: { cy: -100, r: 56 },
   neckY: -65.7,
-  ear: { x: 74.2, cy: -105.3, rx: 31, ry: 31.3, irx: 21.1, iry: 22, pivot: 52.6 },
+  ear: {
+    cy: -140, pivot: 30,
+    // Rounded triangle (right side; mirrored by scale(-1,1)). The base tucks
+    // behind the head shape so only the tip reads as a cat ear.
+    path: 'M20 -146 L50 -128 Q58 -124 60 -132 L66 -166 Q68 -176 59 -174 L28 -148 Q21 -146 20 -146Z',
+    inner: 'M26 -144 L48 -130 Q54 -128 55 -134 L59 -160 Q60 -168 53 -164 L30 -146Z',
+  },
   eye: { x: 23.4, y: -93.8 },
   brow: { x: 13.5, y: -111.2, rx: 3.1, ry: 1.8 },
   mouthY: -79,
@@ -92,14 +99,20 @@ export const G = {
   hand: 9.7,
 };
 
+// Whiskers on the cheeks (right side; mirror with scale(-1,1)).
+const WHISK = 'M30 -86 L58 -90 M31 -79 L60 -79 M30 -72 L58 -64';
+// A plush tail curving out from behind the body, tip dyed like the paws.
+const TAIL_D = 'M-24 -20 C-50 -12 -64 -30 -60 -54';
+const tailSVG = (p) => `<path d="${TAIL_D}" fill="none" stroke="${INK}" stroke-width="11.5" stroke-linecap="round"/><path d="${TAIL_D}" fill="none" stroke="${p.flat || p.body}" stroke-width="8.5" stroke-linecap="round"/><path d="M-61.5 -45 C-62.5 -49 -62 -52.5 -60 -54" fill="none" stroke="${p.leg}" stroke-width="8.5" stroke-linecap="round"/>`;
+
 // Outline width in unit space: thin like the drawing, with a pixel floor.
 const lineFor = (S) => clamp(1.7 / S, 1.4, 3.2);
 
 // Static parts shared by the live actor and the sprite image.
-const earSVG = (p, s) => `<ellipse ${L} cx="${s * G.ear.x}" cy="${G.ear.cy}" rx="${G.ear.rx}" ry="${G.ear.ry}" fill="${p.body}"/><ellipse ${L} cx="${s * G.ear.x}" cy="${G.ear.cy}" rx="${G.ear.irx}" ry="${G.ear.iry}" fill="${p.inner}"/>`;
+const earSVG = (p, s) => `<g transform="scale(${s} 1)"><path ${L} d="${G.ear.path}" fill="${p.body}"/><path ${L} d="${G.ear.inner}" fill="${p.inner}"/></g>`;
 const footSVG = (p, s) => `<path ${L} d="${G.foot}" fill="${p.leg}"${s > 0 ? ' transform="scale(-1 1)"' : ''}/>`;
-const bodySVG = (p) => `<path d="${G.bodyFill}" fill="${p.body}"/><path ${L} d="${G.bodyLine}" fill="none"/><ellipse ${L} cy="${G.belly.cy}" rx="${G.belly.rx}" ry="${G.belly.ry}" fill="${CREAM}"/>`;
-const headSVG = (p) => `<path d="${G.headFill}" fill="${p.body}"/><path ${L} d="${G.headLine}" fill="none"/><path ${L} d="${G.face}" fill="${CREAM}"/>`;
+const bodySVG = (p) => `<path d="${G.bodyFill}" fill="${p.body}"/><path ${L} d="${G.bodyLine}" fill="none"/><ellipse ${L} cy="${G.belly.cy}" rx="${G.belly.rx}" ry="${G.belly.ry}" fill="${CREAM}"/><path d="M-13 -32 Q0 -27 13 -32" fill="none" class="dk-t" stroke-dasharray="2.5 3" opacity=".5"/>`;
+const headSVG = (p) => `<path d="${G.headFill}" fill="${p.body}"/><path ${L} d="${G.headLine}" fill="none"/><path ${L} d="${G.face}" fill="${CREAM}"/><path d="M0 -150 Q3 -142 0 -133" fill="none" class="dk-t" stroke-dasharray="2.5 3" opacity=".45"/>`;
 const STYLE = `.dk-l,.dk-f,.dk-t{stroke:${INK};stroke-linecap:round;stroke-linejoin:round}.dk-l{stroke-width:var(--dkw)}.dk-f{stroke-width:calc(var(--dkw) * 1.5)}.dk-t{stroke-width:calc(var(--dkw) * 0.55)}`;
 
 let uid = 0;
@@ -124,7 +137,7 @@ export class Dopakichi {
     this.stretchX = 1; this.stretchY = 1;
     this.look = { x: 0, y: 0 }; this.lookTarget = { x: 0, y: 0 };
     this.eyes = null; this.mouth = null;
-    this.baseEyes = 'open'; this.baseMouth = 'smile';
+    this.baseEyes = 'open'; this.baseMouth = 'cat';
     this.blinkAt = performance.now() + 1800; this.blinkK = 0;
     this.browLift = new Spring(0, 220, 14);
     this.browTilt = new Spring(0, 220, 14);
@@ -149,12 +162,17 @@ export class Dopakichi {
     this.shadow = el('ellipse', { rx: 40, ry: 7, fill: INK, opacity: 0.14 }, this.root);
     this.bodyG = el('g', {}, this.root);
     this.backG = el('g', {}, this.bodyG);
+    // Tail sits in front of capes (backG) but behind the body, so it survives
+    // setCostume() which rewrites backG.innerHTML.
+    this.tailG = el('g', {}, this.bodyG);
+    this.tailG.innerHTML = tailSVG(p);
     this.feet = [-1, 1].map((s) => { const g = el('g', {}, this.bodyG); g.innerHTML = footSVG(p, s); return g; });
     el('g', {}, this.bodyG).innerHTML = bodySVG(p);
     this.headG = el('g', {}, this.bodyG);
     this.earGs = [-1, 1].map((s) => { const g = el('g', {}, this.headG); g.innerHTML = earSVG(p, s); return { g, s }; });
     el('g', {}, this.headG).innerHTML = headSVG(p);
     this.face = el('g', {}, this.headG);
+    this.face.innerHTML = `<path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/><g transform="scale(-1 1)"><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g>`;
     this.cheeks = [-1, 1].map((s) => el('ellipse', { cx: s * G.cheek.x, cy: G.cheek.y, rx: G.cheek.rx, ry: G.cheek.ry, fill: p.cheek }, this.face));
     this.brows = [-1, 1].map(() => el('ellipse', { class: 'dk-l', rx: G.brow.rx, ry: G.brow.ry, fill: p.body }, this.face));
     this.eyeGs = [-1, 1].map(() => el('g', {}, this.face));
@@ -269,6 +287,8 @@ export class Dopakichi {
       const a = (s < 0 ? -this.earL.value : this.earR.value);
       g.setAttribute('transform', `rotate(${a} ${s * G.ear.pivot} ${G.ear.cy})`);
     });
+    // The tail sways on its own beat, faster when the music pumps.
+    this.tailG.setAttribute('transform', `rotate(${Math.sin(t / (640 - 110 * beat)) * (5 + 6 * beat) + this.lift * 0.25} -24 -20)`);
     const lx = this.look.x * 1.6; const ly = this.look.y * 1.4;
     this.eyeGs.forEach((g, i) => {
       const s = i ? 1 : -1;
@@ -608,10 +628,10 @@ export function dopakichiSprite(palette = 'pink', size = 128) {
   const { eye, cheek, shoulder, brow } = G;
   const tip = (s) => ({ x: s * 66, y: -150 });
   const arm = (s) => `M${s * shoulder.x} ${shoulder.y} Q${s * 62} ${shoulder.y - 20} ${tip(s).x} ${tip(s).y}`;
-  const svg = `<svg xmlns="${NS}" viewBox="-110 -170 220 176" width="${size}" height="${size * 176 / 220}">
+  const svg = `<svg xmlns="${NS}" viewBox="-110 -190 220 196" width="${size}" height="${size * 196 / 220}">
   <style>svg{--dkw:3.4}${STYLE}</style>
-  ${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<ellipse cx="${s * cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
+  ${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.grin}</g>
   ${[-1, 1].map((s) => `<path d="${arm(s)}" fill="none" stroke="${INK}" stroke-width="${G.arm + 6.8}" stroke-linecap="round"/><path d="${arm(s)}" fill="none" stroke="${p.body}" stroke-width="${G.arm}" stroke-linecap="round"/><circle class="dk-l" cx="${tip(s).x}" cy="${tip(s).y}" r="${G.hand}" fill="${p.body}"/>`).join('')}
   </svg>`;
@@ -628,8 +648,8 @@ export function dopakichiSVG(palette = 'pink', costume = null) {
   const armCol = p.flat || p.body;
   const rb = p.body.startsWith('url(') ? '<defs><linearGradient id="dk-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient></defs>' : '';
   return `<svg xmlns="${NS}" viewBox="-112 -232 224 240" aria-hidden="true">${rb}<style>svg{--dkw:3.4}${STYLE}</style>
-  ${c.back || ''}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<ellipse cx="${s * cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
+  ${c.back || ''}${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.smile}</g>
   ${[-1, 1].map((s) => `<circle class="dk-l" cx="${s * G.rest.x}" cy="${G.rest.y}" r="${G.hand}" fill="${armCol}"/>`).join('')}
   ${c.face || ''}${c.head || ''}</svg>`;

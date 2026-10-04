@@ -30,7 +30,7 @@ addItems([
   { id: 'particle:classic', cat: 'particle', name: '纸屑', base: true },
   { id: 'music:classic', cat: 'music', name: '马林巴进行曲', base: true },
   { id: 'costume:none', cat: 'costume', name: '无', base: true },
-  { id: 'color:pink', cat: 'color', name: '粉色', base: true },
+  { id: 'color:pink', cat: 'color', name: '奶白色', base: true },
   { id: 'crowd:classic', cat: 'crowd', name: '彩色观众', base: true },
   { id: 'finale:classic', cat: 'finale', name: '巨型多巴吉', base: true },
 ]);
