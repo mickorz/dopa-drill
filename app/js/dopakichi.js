@@ -1,22 +1,22 @@
 // Dopakichi: a rubber-hose mascot drawn as layered SVG in screen space.
-// Shapes follow docs/dopakichi.svg, converted to unit space (feet at y=0).
-// Body parts are springs; actions are cancellable async routines.
+// Shapes follow docs/dopakichi.svg (V5 ragdoll "Tiantian"), converted to unit
+// space (feet at y=0): warm-brown outline, gray points, glass blue eyes,
+// chest bow with a bell. Body parts are springs; actions are cancellable.
 import { Spring, tween, wait, lerp, clamp, rand, pick, quadPoint, easeOutQuad, easeInQuad, easeOutBack, easeInOutCubic, easeOutCubic, onFrame } from './core.js';
 
 const NS = 'http://www.w3.org/2000/svg';
-export const INK = '#000';
-const CREAM = '#fff3e4';
+export const INK = '#744947';
 export const PALETTES = {
-  // The base look is a white plush kitten; the key stays 'pink' for save data.
-  pink: { body: '#fdf8f2', inner: '#ffd7e4', leg: '#ffb3c9', cheek: '#ffd9e4', iris: '#e8a04c' },
-  blue: { body: '#6fa0ff', inner: '#dde8ff', leg: '#ff97bf', cheek: '#ffd6e6' },
-  yellow: { body: '#ffd452', inner: '#fff3c4', leg: '#2f79f7', cheek: '#ffd9c2' },
-  mint: { body: '#5eddb8', inner: '#d6f8ec', leg: '#7b5cff', cheek: '#ffd6e6' },
-  violet: { body: '#b793ff', inner: '#ede3ff', leg: '#ff97bf', cheek: '#ffd6e6' },
+  // The base look is the V5 white ragdoll; the key stays 'pink' for save data.
+  pink: { body: '#fdf8f2', inner: '#ffb7c6', leg: '#fffdfb', cheek: '#ffc7d3', iris: '#4381da', point: '#c9bcbd' },
+  blue: { body: '#6fa0ff', inner: '#dde8ff', leg: '#ff97bf', cheek: '#ffd6e6', iris: '#244e91', point: '#4867b8' },
+  yellow: { body: '#ffd452', inner: '#fff3c4', leg: '#2f79f7', cheek: '#ffd9c2', iris: '#a8622d', point: '#dbaa38' },
+  mint: { body: '#5eddb8', inner: '#d6f8ec', leg: '#7b5cff', cheek: '#ffd6e6', iris: '#1f7a68', point: '#3fae92' },
+  violet: { body: '#b793ff', inner: '#ede3ff', leg: '#ff97bf', cheek: '#ffd6e6', iris: '#5d3fa8', point: '#8d6fd0' },
   // Unlockable colours for the hero (id041, id044).
-  gold: { body: '#ffc53d', inner: '#fff1b8', leg: '#ff7ab6', cheek: '#ffd9c2' },
-  snow: { body: '#f4f6ff', inner: '#dde4ff', leg: '#3b6bff', cheek: '#ffd6e6' },
-  rainbow: { body: 'url(#dk-rainbow)', inner: '#fff4f9', leg: '#2f79f7', cheek: '#ffe6f0', flat: '#ff97bf' },
+  gold: { body: '#ffc53d', inner: '#fff1b8', leg: '#ff7ab6', cheek: '#ffd9c2', iris: '#8a5a12', point: '#dbaa38' },
+  snow: { body: '#f4f6ff', inner: '#dde4ff', leg: '#3b6bff', cheek: '#ffd6e6', iris: '#4381da', point: '#c5cbe8' },
+  rainbow: { body: 'url(#dk-rainbow)', inner: '#fff4f9', leg: '#2f79f7', cheek: '#ffe6f0', flat: '#ff97bf', iris: '#ff97bf', point: '#b9a0c9' },
 };
 
 // Costumes drawn over the original shape (docs/dopakichi.svg is never changed).
@@ -45,9 +45,10 @@ const L = 'class="dk-l"';
 const F = 'class="dk-f"';
 // Eye rings use a thinner line so the white ring stays visible, as in the drawing.
 const T = 'class="dk-t"';
+// Glass eyes (V5): white ring + rolling iris group (colour, deep pupil, highlight).
 const EYE = {
-  open: (p) => `<circle r="11.2" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="8.6" fill="${p.iris || p.body}"/>`,
-  wide: (p) => `<circle r="12.4" fill="#fff" ${T}/><circle class="dk-t dk-iris" r="5" fill="${p.iris || p.body}"/>`,
+  open: (p) => `<ellipse rx="11.4" ry="12.8" fill="#fff" ${T}/><g class="dk-iris"><ellipse rx="8.8" ry="10" fill="${p.iris || p.body}"/><ellipse rx="5" ry="6.4" fill="#244a83"/><circle cx="-3" cy="-4.4" r="2.7" fill="#fff"/></g>`,
+  wide: (p) => `<ellipse rx="13" ry="14.4" fill="#fff" ${T}/><g class="dk-iris"><ellipse rx="5.6" ry="6.4" fill="${p.iris || p.body}"/><ellipse rx="3.2" ry="4" fill="#244a83"/><circle cx="-1.8" cy="-2.6" r="1.8" fill="#fff"/></g>`,
   happy: () => `<path d="M-9 3 Q0 -10 9 3" fill="none" ${F}/>`,
   closed: () => `<path d="M-9 -1 Q0 7 9 -1" fill="none" ${F}/>`,
   x: () => `<path d="M-7 -7 L7 7 M7 -7 L-7 7" fill="none" ${F}/>`,
@@ -75,12 +76,12 @@ export const G = {
   footPivot: { x: 18.5, y: -15.8 },
   // Body fill reaches up under the head; the neck has no drawn seam.
   bodyFill: 'M-37.4 -65.7 C-29.7 -61 -25.2 -54.2 -25.2 -46.8 C-25.2 -40.5 -28.8 -35.3 -28.8 -28.4 C-28.8 -18.4 -20.7 -13.5 -10.8 -13.5 L10.8 -13.5 C20.7 -13.5 28.8 -18.4 28.8 -28.4 C28.8 -35.3 25.2 -40.5 25.2 -46.8 C25.2 -54.2 29.7 -61 37.4 -65.7 L37.4 -75.2 L-37.4 -75.2Z',
-  bodyLine: 'M-37.4 -65.7 C-29.7 -61 -25.2 -54.2 -25.2 -46.8 C-25.2 -40.5 -28.8 -35.3 -28.8 -28.4 C-28.8 -18.4 -20.7 -13.5 -10.8 -13.5 L10.8 -13.5 C20.7 -13.5 28.8 -18.4 28.8 -28.4 C28.8 -35.3 25.2 -40.5 25.2 -46.8 C25.2 -54.2 29.7 -61 37.4 -65.7',
-  belly: { cy: -32, rx: 17.8, ry: 13.5 },
-  headFill: 'M-37.4 -65.7 C-49.7 -73.1 -56.3 -82.1 -56.3 -98.5 C-56.3 -129.6 -32.9 -149.2 0 -149.2 C32.9 -149.2 56.3 -129.6 56.3 -98.5 C56.3 -82.1 49.7 -73.1 37.4 -65.7 L0 -70.2Z',
-  headLine: 'M-37.4 -65.7 C-49.7 -73.1 -56.3 -82.1 -56.3 -98.5 C-56.3 -129.6 -32.9 -149.2 0 -149.2 C32.9 -149.2 56.3 -129.6 56.3 -98.5 C56.3 -82.1 49.7 -73.1 37.4 -65.7',
-  face: 'M0 -133 C29.7 -133 48.2 -121.7 48.2 -96.5 C48.2 -71.3 25.7 -61.2 0 -61.2 C-25.7 -61.2 -48.2 -71.3 -48.2 -96.5 C-48.2 -121.7 -29.7 -133 0 -133Z',
+  bodyLine: 'M-37.4 -65.7 C-29.7 -61 -25.2 -54.2 -25.2 -46.8 C-25.2 -40.5 -28.8 -35.3 -28.8 -28.4 C-28.8 -18.4 -20.7 -13.5 -10.8 -13.5 L10.8 -13.5 C20.7 -13.5 28.8 -18.4 28.8 -28.4 C28.8 -35.3 25.2 -40.5 25.2 -46.8 C29.7 -61 37.4 -65.7',
   head: { cy: -100, r: 56 },
+  // Head envelope as a superellipse (centre/radii + squareness k). k<1 makes
+  // the jaw come down wide enough to cover the shoulder corners (±37.4,-65.7)
+  // like the V5 canon, so the head outline meets the body outline.
+  headRing: { cx: 0, cy: -106, rx: 56.5, ry: 45, k: 0.67 },
   neckY: -65.7,
   ear: {
     cy: -140, pivot: 30,
@@ -88,31 +89,80 @@ export const G = {
     // behind the head shape so only the tip reads as a cat ear.
     path: 'M20 -146 L50 -128 Q58 -124 60 -132 L66 -166 Q68 -176 59 -174 L28 -148 Q21 -146 20 -146Z',
     inner: 'M26 -144 L48 -130 Q54 -128 55 -134 L59 -160 Q60 -168 53 -164 L30 -146Z',
+    centroid: { x: 40, y: -152 },
   },
   eye: { x: 23.4, y: -93.8 },
   brow: { x: 13.5, y: -111.2, rx: 3.1, ry: 1.8 },
   mouthY: -79,
-  cheek: { x: 30.6, y: -78.5, rx: 4.3, ry: 2.7 },
+  cheek: { x: 30.6, y: -78.5, rx: 8.6, ry: 4.6 },
   shoulder: { x: 25.7, y: -48 },
   rest: { x: 37.8, y: -34.7 },
   arm: 4.6,
   hand: 9.7,
 };
 
+// Fluffy tufted ring around a superellipse. Only the right half is generated
+// (from the crown at 270° down to aEnd); the left half is its exact mirror,
+// so the tuft alternation phase is perfectly symmetric left/right.
+const tuftRing = (ring, m, bump, aEnd) => {
+  const { cx, cy, rx, ry, k = 1 } = ring;
+  const pt = (deg, s) => {
+    const a = (deg * Math.PI) / 180;
+    const c = Math.cos(a); const sn = Math.sin(a);
+    return [cx + Math.sign(c) * Math.abs(c) ** k * rx * s, cy + Math.sign(sn) * Math.abs(sn) ** k * ry * s];
+  };
+  const fmt = ([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+  const step = (aEnd - 270) / m;
+  const segs = [];
+  for (let i = 0; i < m; i++) {
+    const outward = i % 2 === 0; // tufts alternate, starting outwards at the crown
+    segs.push({
+      tip: pt(270 + (i + 0.5) * step, 1 + bump * (outward ? 0.55 : -0.2)),
+      node: pt(270 + (i + 1) * step, 1 + bump * (outward ? -0.25 : 1)),
+    });
+  }
+  const top = pt(270, 1);
+  // Right half: crown → aEnd.
+  let right = '';
+  for (const s of segs) right += ` Q${fmt(s.tip)} ${fmt(s.node)}`;
+  // Left half: the exact mirror of the right, walked from its far end back to
+  // the crown. Reversing a bezier chain shifts the pairing: segment i keeps
+  // its mirrored tip but lands on the *next* node inward, so every curve is
+  // the true mirror image of its right-side twin.
+  const L = segs.map((s) => ({
+    tip: [2 * cx - s.tip[0], s.tip[1]],
+    node: [2 * cx - s.node[0], s.node[1]],
+  }));
+  let left = `M${fmt(L[m - 1].node)}`;
+  for (let i = m - 1; i >= 0; i--) left += ` Q${fmt(L[i].tip)} ${fmt(i === 0 ? top : L[i - 1].node)}`;
+  return left + right;
+};
+// Head silhouette: stroked from one jaw over the top to the other, so the
+// fluff overlaps the shoulder corners with a visible outline; the stroke ends
+// tuck inside the body fill, meeting the body outline like the original drawing.
+const HEAD_FLUFF = tuftRing(G.headRing, 8, 0.09, 428);
+
 // Whiskers on the cheeks (right side; mirror with scale(-1,1)).
 const WHISK = 'M30 -86 L58 -90 M31 -79 L60 -79 M30 -72 L58 -64';
-// A plush tail curving out from behind the body, tip dyed like the paws.
+// A plush tail curving out from behind the body; V5 dyes it the point colour.
 const TAIL_D = 'M-24 -20 C-50 -12 -64 -30 -60 -54';
-const tailSVG = (p) => `<path d="${TAIL_D}" fill="none" stroke="${INK}" stroke-width="11.5" stroke-linecap="round"/><path d="${TAIL_D}" fill="none" stroke="${p.flat || p.body}" stroke-width="8.5" stroke-linecap="round"/><path d="M-61.5 -45 C-62.5 -49 -62 -52.5 -60 -54" fill="none" stroke="${p.leg}" stroke-width="8.5" stroke-linecap="round"/>`;
+const tailSVG = (p) => `<path d="${TAIL_D}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/><path d="${TAIL_D}" fill="none" stroke="${p.point || p.flat || p.body}" stroke-width="10" stroke-linecap="round"/><path d="M-61.5 -45 C-62.5 -49 -62 -52.5 -60 -54" fill="none" stroke="${p.leg}" stroke-width="10" stroke-linecap="round"/>`;
 
 // Outline width in unit space: thin like the drawing, with a pixel floor.
 const lineFor = (S) => clamp(1.7 / S, 1.4, 3.2);
 
 // Static parts shared by the live actor and the sprite image.
-const earSVG = (p, s) => `<g transform="scale(${s} 1)"><path ${L} d="${G.ear.path}" fill="${p.body}"/><path ${L} d="${G.ear.inner}" fill="${p.inner}"/></g>`;
+// Ear: fur shell, gray point layer (inner scaled up), pink centre.
+const earSVG = (p, s) => {
+  const c = G.ear.centroid;
+  return `<g transform="scale(${s} 1)"><path ${L} d="${G.ear.path}" fill="${p.body}"/><g transform="translate(${c.x} ${c.y}) scale(1.3) translate(${-c.x} ${-c.y})"><path d="${G.ear.inner}" fill="${p.point || p.inner}"/></g><path ${L} d="${G.ear.inner}" fill="${p.inner}"/></g>`;
+};
 const footSVG = (p, s) => `<path ${L} d="${G.foot}" fill="${p.leg}"${s > 0 ? ' transform="scale(-1 1)"' : ''}/>`;
-const bodySVG = (p) => `<path d="${G.bodyFill}" fill="${p.body}"/><path ${L} d="${G.bodyLine}" fill="none"/><ellipse ${L} cy="${G.belly.cy}" rx="${G.belly.rx}" ry="${G.belly.ry}" fill="${CREAM}"/><path d="M-13 -32 Q0 -27 13 -32" fill="none" class="dk-t" stroke-dasharray="2.5 3" opacity=".5"/>`;
-const headSVG = (p) => `<path d="${G.headFill}" fill="${p.body}"/><path ${L} d="${G.headLine}" fill="none"/><path ${L} d="${G.face}" fill="${CREAM}"/><path d="M0 -150 Q3 -142 0 -133" fill="none" class="dk-t" stroke-dasharray="2.5 3" opacity=".45"/>`;
+// Chest bow with a gold bell: the V5 signature, drawn on the body front.
+const bowSVG = () => `<path class="dk-l" d="M-8 -41 C-12 -49 -22 -51 -25.5 -45.5 C-28 -41 -25 -34.5 -19 -33.5 C-13.5 -32.7 -9.7 -36 -8 -41Z M8 -41 C12 -49 22 -51 25.5 -45.5 C28 -41 25 -34.5 19 -33.5 C13.5 -32.7 9.7 -36 8 -41Z" fill="#f2a0bc"/><circle ${L} cx="0" cy="-40.5" r="7.4" fill="#ffd773"/><path d="M-5.5 -42.5 Q0 -45.8 5.5 -42.5" fill="none" stroke="#d09131" stroke-width="1.4" stroke-linecap="round"/><circle cx="-2.1" cy="-43.8" r="1.5" fill="#fff9d1"/><circle cx="0" cy="-37.8" r="1.3" fill="#5a4040"/>`;
+const bodySVG = (p) => `<path d="${G.bodyFill}" fill="${p.body}"/><path ${L} d="${G.bodyLine}" fill="none"/>${bowSVG()}`;
+// Head: tufted fluffy silhouette + ragdoll forehead point colour.
+const headSVG = (p) => `<path d="${HEAD_FLUFF}Z" fill="${p.body}"/><path ${L} d="${HEAD_FLUFF}" fill="none"/><path d="M-19 -126 Q0 -142 19 -126 Q10 -112 0 -109 Q-10 -112 -19 -126Z" fill="${p.point || p.inner}" opacity=".85"/>`;
 const STYLE = `.dk-l,.dk-f,.dk-t{stroke:${INK};stroke-linecap:round;stroke-linejoin:round}.dk-l{stroke-width:var(--dkw)}.dk-f{stroke-width:calc(var(--dkw) * 1.5)}.dk-t{stroke-width:calc(var(--dkw) * 0.55)}`;
 
 let uid = 0;
@@ -172,8 +222,8 @@ export class Dopakichi {
     this.earGs = [-1, 1].map((s) => { const g = el('g', {}, this.headG); g.innerHTML = earSVG(p, s); return { g, s }; });
     el('g', {}, this.headG).innerHTML = headSVG(p);
     this.face = el('g', {}, this.headG);
-    this.face.innerHTML = `<path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/><g transform="scale(-1 1)"><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g>`;
-    this.cheeks = [-1, 1].map((s) => el('ellipse', { cx: s * G.cheek.x, cy: G.cheek.y, rx: G.cheek.rx, ry: G.cheek.ry, fill: p.cheek }, this.face));
+    this.face.innerHTML = `<path class="dk-t" d="M-3.4 -88.5 Q0 -91.8 3.4 -88.5 Q1.8 -84 0 -84 Q-1.8 -84 -3.4 -88.5Z" fill="#f6a1b2"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/><g transform="scale(-1 1)"><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g>`;
+    this.cheeks = [-1, 1].map((s) => el('ellipse', { cx: s * G.cheek.x, cy: G.cheek.y, rx: G.cheek.rx, ry: G.cheek.ry, fill: p.cheek, opacity: 0.82 }, this.face));
     this.brows = [-1, 1].map(() => el('ellipse', { class: 'dk-l', rx: G.brow.rx, ry: G.brow.ry, fill: p.body }, this.face));
     this.eyeGs = [-1, 1].map(() => el('g', {}, this.face));
     this.irises = [];
@@ -631,7 +681,7 @@ export function dopakichiSprite(palette = 'pink', size = 128) {
   const svg = `<svg xmlns="${NS}" viewBox="-110 -190 220 196" width="${size}" height="${size * 196 / 220}">
   <style>svg{--dkw:3.4}${STYLE}</style>
   ${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.grin}</g>
   ${[-1, 1].map((s) => `<path d="${arm(s)}" fill="none" stroke="${INK}" stroke-width="${G.arm + 6.8}" stroke-linecap="round"/><path d="${arm(s)}" fill="none" stroke="${p.body}" stroke-width="${G.arm}" stroke-linecap="round"/><circle class="dk-l" cx="${tip(s).x}" cy="${tip(s).y}" r="${G.hand}" fill="${p.body}"/>`).join('')}
   </svg>`;
@@ -649,7 +699,7 @@ export function dopakichiSVG(palette = 'pink', costume = null) {
   const rb = p.body.startsWith('url(') ? '<defs><linearGradient id="dk-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient></defs>' : '';
   return `<svg xmlns="${NS}" viewBox="-112 -232 224 240" aria-hidden="true">${rb}<style>svg{--dkw:3.4}${STYLE}</style>
   ${c.back || ''}${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.smile}</g>
   ${[-1, 1].map((s) => `<circle class="dk-l" cx="${s * G.rest.x}" cy="${G.rest.y}" r="${G.hand}" fill="${armCol}"/>`).join('')}
   ${c.face || ''}${c.head || ''}</svg>`;
