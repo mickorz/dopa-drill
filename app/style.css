@@ -129,7 +129,17 @@ body.reduced .logo *, body.reduced .logo-burst { animation: none !important; }
 .slider::-moz-range-thumb { width: 26px; height: 26px; border: 3px solid var(--ink); border-radius: 50%; background: var(--yellow); box-shadow: 0 3px 0 var(--ink); }
 .slider.motion::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--blue-soft), var(--pink) 50%, var(--yellow)) 0 0 / calc(var(--v) * 100%) 100% no-repeat, #fff; }
 .slider.motion::-moz-range-track { background: linear-gradient(90deg, var(--blue-soft), var(--pink) 50%, var(--yellow)) 0 0 / calc(var(--v) * 100%) 100% no-repeat, #fff; }
-.title-stage { width: 100%; height: min(26vh, 200px); }
+.title-stage { width: 100%; height: min(26vh, 200px); position: relative; }
+.hero-tag {
+  position: absolute; left: 50%; bottom: -9px;
+  transform: translateX(-50%) rotate(-2deg);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 14px 4px;
+  background: #fff; border: 3px solid var(--ink); border-radius: 999px;
+  box-shadow: 0 4px 0 var(--ink);
+  font-family: var(--chunky); font-size: 16px; color: var(--ink); letter-spacing: 1px;
+}
+.hero-tag svg { width: 13px; height: 13px; display: block; }
 .pick { display: flex; gap: 10px; }
 .pick button {
   width: 84px; height: 56px; border: 3px solid var(--ink); border-radius: 16px; background: #fff;

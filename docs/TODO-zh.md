@@ -8,7 +8,7 @@
 
 | 日文原名 | 当前中文 | 改动位置 |
 | --- | --- | --- |
-| ドパドリル | 多巴练习 | `app/index.html`（title、meta、LOGO 拆字「多巴/练习」）、README |
+| ドパドリル | 甜甜练习 | `app/index.html`（title、LOGO 拆字「甜甜/练习」）、README |
 | ドパキチ | 甜甜 | `app/js/main.js`、`app/js/guide.js`、`app/js/unlocks.js`、`docs/SPEC.md` |
 | ドパ（货币单位） | 多巴 | `app/index.html`、`app/js/main.js`（combo-mult）、`app/js/scoring.js`、`app/js/trophies.js` |
 | エクストラ | 附加挑战（紧凑处「附加」） | `app/index.html`、`app/js/main.js`、`app/js/quests.js`、`app/js/trophies.js` |
