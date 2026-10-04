@@ -1,5 +1,5 @@
-// Dopakichi: a rubber-hose mascot drawn as layered SVG in screen space.
-// Shapes follow docs/dopakichi.svg (V5 ragdoll "Tiantian"), converted to unit
+// Tiantian: a rubber-hose mascot drawn as layered SVG in screen space.
+// Shapes follow docs/tiantian.svg (V5 ragdoll "Tiantian"), converted to unit
 // space (feet at y=0): warm-brown outline, gray points, glass blue eyes,
 // chest bow with a bell. Body parts are springs; actions are cancellable.
 import { Spring, tween, wait, lerp, clamp, rand, pick, quadPoint, easeOutQuad, easeInQuad, easeOutBack, easeInOutCubic, easeOutCubic, onFrame } from './core.js';
@@ -16,20 +16,20 @@ export const PALETTES = {
   // Unlockable colours for the hero (id041, id044).
   gold: { body: '#ffc53d', inner: '#fff1b8', leg: '#ff7ab6', cheek: '#ffd9c2', iris: '#8a5a12', point: '#dbaa38' },
   snow: { body: '#f4f6ff', inner: '#dde4ff', leg: '#3b6bff', cheek: '#ffd6e6', iris: '#4381da', point: '#c5cbe8' },
-  rainbow: { body: 'url(#dk-rainbow)', inner: '#fff4f9', leg: '#2f79f7', cheek: '#ffe6f0', flat: '#ff97bf', iris: '#ff97bf', point: '#b9a0c9' },
+  rainbow: { body: 'url(#tt-rainbow)', inner: '#fff4f9', leg: '#2f79f7', cheek: '#ffe6f0', flat: '#ff97bf', iris: '#ff97bf', point: '#b9a0c9' },
 };
 
-// Costumes drawn over the original shape (docs/dopakichi.svg is never changed).
+// Costumes drawn over the original shape (docs/tiantian.svg is never changed).
 // head: moves with the head; back: behind the body (capes).
 export const COSTUMES = {
-  cap: { head: `<path class="dk-l" d="M-44 -133 C-44 -166 44 -166 44 -133 Z" fill="#3b6bff"/><path class="dk-l" d="M-6 -133 C10 -140 52 -142 60 -132 C52 -126 20 -126 -6 -133Z" fill="#2a4fd6"/><circle class="dk-l" cx="0" cy="-160" r="5" fill="#ffd23f"/><path d="M-30 -147 Q0 -158 30 -147" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>` },
-  hachimaki: { head: `<path class="dk-l" d="M-55 -128 Q0 -142 55 -128 L55 -116 Q0 -130 -55 -116Z" fill="#fff"/><circle cx="0" cy="-129" r="6" fill="#ff4f6d"/><path class="dk-l" d="M50 -124 Q70 -132 82 -122 Q70 -118 56 -120Z M52 -120 Q66 -110 74 -98 Q62 -104 52 -114Z" fill="#fff"/>` },
-  cape: { back: `<path class="dk-l" d="M-30 -58 C-60 -30 -64 -10 -58 4 L58 4 C64 -10 60 -30 30 -58 Z" fill="#ff4f6d"/><path d="M-50 -2 L50 -2" stroke="#ffd23f" stroke-width="5"/>`, head: `<path class="dk-l" d="M-24 -66 Q0 -58 24 -66 L20 -58 Q0 -52 -20 -58Z" fill="#ff4f6d"/><circle class="dk-l" cx="0" cy="-59" r="4.5" fill="#ffd23f"/>` },
-  crown: { head: `<path class="dk-l" d="M-32 -140 L-36 -176 L-18 -156 L0 -184 L18 -156 L36 -176 L32 -140 Z" fill="#ffd23f"/><circle class="dk-l" cx="0" cy="-160" r="5" fill="#ff4f6d"/><circle class="dk-l" cx="-22" cy="-150" r="3.5" fill="#3b6bff"/><circle class="dk-l" cx="22" cy="-150" r="3.5" fill="#3fdcb0"/>` },
-  glasses: { face: `<g class="dk-l" fill="rgba(255,255,255,.25)"><circle cx="-23.4" cy="-93.8" r="15"/><circle cx="23.4" cy="-93.8" r="15"/></g><path class="dk-l" d="M-8.4 -95 Q0 -100 8.4 -95 M-38 -97 L-48 -101 M38 -97 L48 -101" fill="none"/>` },
-  ribbon: { head: `<path class="dk-l" d="M0 -150 C-14 -176 -46 -170 -36 -150 C-30 -140 -12 -142 0 -150Z M0 -150 C14 -176 46 -170 36 -150 C30 -140 12 -142 0 -150Z" fill="#ff5a9c"/><circle class="dk-l" cx="0" cy="-151" r="7" fill="#ff7ab6"/><path d="M-28 -160 Q-20 -156 -14 -152 M28 -160 Q20 -156 14 -152" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>` },
-  headphones: { head: `<path class="dk-l" d="M-60 -110 C-60 -178 60 -178 60 -110" fill="none" stroke-width="7" stroke="#1b1d4d"/><path d="M-60 -110 C-60 -178 60 -178 60 -110" fill="none" stroke="#a77bff" stroke-width="5"/><rect class="dk-l" x="-68" y="-122" width="16" height="30" rx="7" fill="#a77bff"/><rect class="dk-l" x="52" y="-122" width="16" height="30" rx="7" fill="#a77bff"/>` },
-  wizard: { head: `<path class="dk-l" d="M-52 -138 Q0 -152 52 -138 Q0 -128 -52 -138Z" fill="#5b3fd6"/><path class="dk-l" d="M-34 -141 C-20 -170 -4 -208 22 -222 C14 -200 26 -170 34 -141 Z" fill="#6f52ff"/><path class="dk-l" d="M-4 -182 L-1 -175 L6 -175 L0 -170 L3 -163 L-4 -167 L-10 -163 L-8 -170 L-14 -175 L-6 -175Z" fill="#ffd23f"/><circle class="dk-l" cx="22" cy="-222" r="5" fill="#ffd23f"/>` },
+  cap: { head: `<path class="tt-l" d="M-44 -133 C-44 -166 44 -166 44 -133 Z" fill="#3b6bff"/><path class="tt-l" d="M-6 -133 C10 -140 52 -142 60 -132 C52 -126 20 -126 -6 -133Z" fill="#2a4fd6"/><circle class="tt-l" cx="0" cy="-160" r="5" fill="#ffd23f"/><path d="M-30 -147 Q0 -158 30 -147" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>` },
+  hachimaki: { head: `<path class="tt-l" d="M-55 -128 Q0 -142 55 -128 L55 -116 Q0 -130 -55 -116Z" fill="#fff"/><circle cx="0" cy="-129" r="6" fill="#ff4f6d"/><path class="tt-l" d="M50 -124 Q70 -132 82 -122 Q70 -118 56 -120Z M52 -120 Q66 -110 74 -98 Q62 -104 52 -114Z" fill="#fff"/>` },
+  cape: { back: `<path class="tt-l" d="M-30 -58 C-60 -30 -64 -10 -58 4 L58 4 C64 -10 60 -30 30 -58 Z" fill="#ff4f6d"/><path d="M-50 -2 L50 -2" stroke="#ffd23f" stroke-width="5"/>`, head: `<path class="tt-l" d="M-24 -66 Q0 -58 24 -66 L20 -58 Q0 -52 -20 -58Z" fill="#ff4f6d"/><circle class="tt-l" cx="0" cy="-59" r="4.5" fill="#ffd23f"/>` },
+  crown: { head: `<path class="tt-l" d="M-32 -140 L-36 -176 L-18 -156 L0 -184 L18 -156 L36 -176 L32 -140 Z" fill="#ffd23f"/><circle class="tt-l" cx="0" cy="-160" r="5" fill="#ff4f6d"/><circle class="tt-l" cx="-22" cy="-150" r="3.5" fill="#3b6bff"/><circle class="tt-l" cx="22" cy="-150" r="3.5" fill="#3fdcb0"/>` },
+  glasses: { face: `<g class="tt-l" fill="rgba(255,255,255,.25)"><circle cx="-23.4" cy="-93.8" r="15"/><circle cx="23.4" cy="-93.8" r="15"/></g><path class="tt-l" d="M-8.4 -95 Q0 -100 8.4 -95 M-38 -97 L-48 -101 M38 -97 L48 -101" fill="none"/>` },
+  ribbon: { head: `<path class="tt-l" d="M0 -150 C-14 -176 -46 -170 -36 -150 C-30 -140 -12 -142 0 -150Z M0 -150 C14 -176 46 -170 36 -150 C30 -140 12 -142 0 -150Z" fill="#ff5a9c"/><circle class="tt-l" cx="0" cy="-151" r="7" fill="#ff7ab6"/><path d="M-28 -160 Q-20 -156 -14 -152 M28 -160 Q20 -156 14 -152" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>` },
+  headphones: { head: `<path class="tt-l" d="M-60 -110 C-60 -178 60 -178 60 -110" fill="none" stroke-width="7" stroke="#1b1d4d"/><path d="M-60 -110 C-60 -178 60 -178 60 -110" fill="none" stroke="#a77bff" stroke-width="5"/><rect class="tt-l" x="-68" y="-122" width="16" height="30" rx="7" fill="#a77bff"/><rect class="tt-l" x="52" y="-122" width="16" height="30" rx="7" fill="#a77bff"/>` },
+  wizard: { head: `<path class="tt-l" d="M-52 -138 Q0 -152 52 -138 Q0 -128 -52 -138Z" fill="#5b3fd6"/><path class="tt-l" d="M-34 -141 C-20 -170 -4 -208 22 -222 C14 -200 26 -170 34 -141 Z" fill="#6f52ff"/><path class="tt-l" d="M-4 -182 L-1 -175 L6 -175 L0 -170 L3 -163 L-4 -167 L-10 -163 L-8 -170 L-14 -175 L-6 -175Z" fill="#ffd23f"/><circle class="tt-l" cx="22" cy="-222" r="5" fill="#ffd23f"/>` },
 };
 
 const el = (name, attrs = {}, parent) => {
@@ -39,16 +39,16 @@ const el = (name, attrs = {}, parent) => {
   return e;
 };
 
-// Outlines use the class "dk-l" (stroke width from --dkw); expression
-// strokes use "dk-f", slightly heavier so faces stay readable when small.
-const L = 'class="dk-l"';
-const F = 'class="dk-f"';
+// Outlines use the class "tt-l" (stroke width from --ttw); expression
+// strokes use "tt-f", slightly heavier so faces stay readable when small.
+const L = 'class="tt-l"';
+const F = 'class="tt-f"';
 // Eye rings use a thinner line so the white ring stays visible, as in the drawing.
-const T = 'class="dk-t"';
+const T = 'class="tt-t"';
 // Glass eyes (V5): white ring + rolling iris group (colour, deep pupil, highlight).
 const EYE = {
-  open: (p) => `<ellipse rx="11.4" ry="12.8" fill="#fff" ${T}/><g class="dk-iris"><ellipse rx="8.8" ry="10" fill="${p.iris || p.body}"/><ellipse rx="5" ry="6.4" fill="#244a83"/><circle cx="-3" cy="-4.4" r="2.7" fill="#fff"/></g>`,
-  wide: (p) => `<ellipse rx="13" ry="14.4" fill="#fff" ${T}/><g class="dk-iris"><ellipse rx="5.6" ry="6.4" fill="${p.iris || p.body}"/><ellipse rx="3.2" ry="4" fill="#244a83"/><circle cx="-1.8" cy="-2.6" r="1.8" fill="#fff"/></g>`,
+  open: (p) => `<ellipse rx="11.4" ry="12.8" fill="#fff" ${T}/><g class="tt-iris"><ellipse rx="8.8" ry="10" fill="${p.iris || p.body}"/><ellipse rx="5" ry="6.4" fill="#244a83"/><circle cx="-3" cy="-4.4" r="2.7" fill="#fff"/></g>`,
+  wide: (p) => `<ellipse rx="13" ry="14.4" fill="#fff" ${T}/><g class="tt-iris"><ellipse rx="5.6" ry="6.4" fill="${p.iris || p.body}"/><ellipse rx="3.2" ry="4" fill="#244a83"/><circle cx="-1.8" cy="-2.6" r="1.8" fill="#fff"/></g>`,
   happy: () => `<path d="M-9 3 Q0 -10 9 3" fill="none" ${F}/>`,
   closed: () => `<path d="M-9 -1 Q0 7 9 -1" fill="none" ${F}/>`,
   x: () => `<path d="M-7 -7 L7 7 M7 -7 L-7 7" fill="none" ${F}/>`,
@@ -70,7 +70,7 @@ const MOUTH = {
   puff: `<path d="M-3 0 L3 0" fill="none" ${L}/>`,
 };
 
-// Shape constants (unit space, feet at y=0), from docs/dopakichi.svg scaled by 0.18.
+// Shape constants (unit space, feet at y=0), from docs/tiantian.svg scaled by 0.18.
 export const G = {
   foot: 'M-19.3 -18.5 C-24.8 -18.5 -28.1 -16 -32.8 -11.3 C-36.7 -7.4 -38.9 -4.9 -35.8 -2.3 C-31.5 1.4 -24.1 1.1 -18.2 -2 C-12.1 -4.9 -8.5 -9.2 -12.1 -14.8 C-13.9 -17.6 -16.2 -18.5 -19.3 -18.5Z',
   footPivot: { x: 18.5, y: -15.8 },
@@ -159,15 +159,15 @@ const earSVG = (p, s) => {
 };
 const footSVG = (p, s) => `<path ${L} d="${G.foot}" fill="${p.leg}"${s > 0 ? ' transform="scale(-1 1)"' : ''}/>`;
 // Chest bow with a gold bell: the V5 signature, drawn on the body front.
-const bowSVG = () => `<path class="dk-l" d="M-8 -41 C-12 -49 -22 -51 -25.5 -45.5 C-28 -41 -25 -34.5 -19 -33.5 C-13.5 -32.7 -9.7 -36 -8 -41Z M8 -41 C12 -49 22 -51 25.5 -45.5 C28 -41 25 -34.5 19 -33.5 C13.5 -32.7 9.7 -36 8 -41Z" fill="#f2a0bc"/><circle ${L} cx="0" cy="-40.5" r="7.4" fill="#ffd773"/><path d="M-5.5 -42.5 Q0 -45.8 5.5 -42.5" fill="none" stroke="#d09131" stroke-width="1.4" stroke-linecap="round"/><circle cx="-2.1" cy="-43.8" r="1.5" fill="#fff9d1"/><circle cx="0" cy="-37.8" r="1.3" fill="#5a4040"/>`;
+const bowSVG = () => `<path class="tt-l" d="M-8 -41 C-12 -49 -22 -51 -25.5 -45.5 C-28 -41 -25 -34.5 -19 -33.5 C-13.5 -32.7 -9.7 -36 -8 -41Z M8 -41 C12 -49 22 -51 25.5 -45.5 C28 -41 25 -34.5 19 -33.5 C13.5 -32.7 9.7 -36 8 -41Z" fill="#f2a0bc"/><circle ${L} cx="0" cy="-40.5" r="7.4" fill="#ffd773"/><path d="M-5.5 -42.5 Q0 -45.8 5.5 -42.5" fill="none" stroke="#d09131" stroke-width="1.4" stroke-linecap="round"/><circle cx="-2.1" cy="-43.8" r="1.5" fill="#fff9d1"/><circle cx="0" cy="-37.8" r="1.3" fill="#5a4040"/>`;
 const bodySVG = (p) => `<path d="${G.bodyFill}" fill="${p.body}"/><path ${L} d="${G.bodyLine}" fill="none"/>${bowSVG()}`;
 // Head: tufted fluffy silhouette + ragdoll forehead point colour.
 const headSVG = (p) => `<path d="${HEAD_FLUFF}Z" fill="${p.body}"/><path ${L} d="${HEAD_FLUFF}" fill="none"/><path d="M-19 -126 Q0 -142 19 -126 Q10 -112 0 -109 Q-10 -112 -19 -126Z" fill="${p.point || p.inner}" opacity=".85"/>`;
-const STYLE = `.dk-l,.dk-f,.dk-t{stroke:${INK};stroke-linecap:round;stroke-linejoin:round}.dk-l{stroke-width:var(--dkw)}.dk-f{stroke-width:calc(var(--dkw) * 1.5)}.dk-t{stroke-width:calc(var(--dkw) * 0.55)}`;
+const STYLE = `.tt-l,.tt-f,.tt-t{stroke:${INK};stroke-linecap:round;stroke-linejoin:round}.tt-l{stroke-width:var(--ttw)}.tt-f{stroke-width:calc(var(--ttw) * 1.5)}.tt-t{stroke-width:calc(var(--ttw) * 0.55)}`;
 
 let uid = 0;
 
-export class Dopakichi {
+export class Tiantian {
   constructor(layer, { scale = 0.7, palette = 'pink', front } = {}) {
     this.layer = layer;
     this.S = scale;
@@ -208,7 +208,7 @@ export class Dopakichi {
     const p = this.pal;
     this.front = front;
     this.root = el('g', { class: 'dk' }, this.layer);
-    this.root.style.setProperty('--dkw', this.lw);
+    this.root.style.setProperty('--ttw', this.lw);
     this.shadow = el('ellipse', { rx: 40, ry: 7, fill: INK, opacity: 0.14 }, this.root);
     this.bodyG = el('g', {}, this.root);
     this.backG = el('g', {}, this.bodyG);
@@ -222,16 +222,16 @@ export class Dopakichi {
     this.earGs = [-1, 1].map((s) => { const g = el('g', {}, this.headG); g.innerHTML = earSVG(p, s); return { g, s }; });
     el('g', {}, this.headG).innerHTML = headSVG(p);
     this.face = el('g', {}, this.headG);
-    this.face.innerHTML = `<path class="dk-t" d="M-3.4 -88.5 Q0 -91.8 3.4 -88.5 Q1.8 -84 0 -84 Q-1.8 -84 -3.4 -88.5Z" fill="#f6a1b2"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/><g transform="scale(-1 1)"><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g>`;
+    this.face.innerHTML = `<path class="tt-t" d="M-3.4 -88.5 Q0 -91.8 3.4 -88.5 Q1.8 -84 0 -84 Q-1.8 -84 -3.4 -88.5Z" fill="#f6a1b2"/><path class="tt-t" d="${WHISK}" fill="none" opacity=".55"/><g transform="scale(-1 1)"><path class="tt-t" d="${WHISK}" fill="none" opacity=".55"/></g>`;
     this.cheeks = [-1, 1].map((s) => el('ellipse', { cx: s * G.cheek.x, cy: G.cheek.y, rx: G.cheek.rx, ry: G.cheek.ry, fill: p.cheek, opacity: 0.82 }, this.face));
-    this.brows = [-1, 1].map(() => el('ellipse', { class: 'dk-l', rx: G.brow.rx, ry: G.brow.ry, fill: p.body }, this.face));
+    this.brows = [-1, 1].map(() => el('ellipse', { class: 'tt-l', rx: G.brow.rx, ry: G.brow.ry, fill: p.body }, this.face));
     this.eyeGs = [-1, 1].map(() => el('g', {}, this.face));
     this.irises = [];
     this.mouthG = el('g', { transform: `translate(0 ${G.mouthY})` }, this.face);
-    this.sweat = el('path', { d: 'M0 -12 Q6 -2 0 2 Q-6 -2 0 -12Z', fill: '#8fd3ff', class: 'dk-l', opacity: 0 }, this.face);
+    this.sweat = el('path', { d: 'M0 -12 Q6 -2 0 2 Q-6 -2 0 -12Z', fill: '#8fd3ff', class: 'tt-l', opacity: 0 }, this.face);
     this.faceWear = el('g', {}, this.headG);
     this.headWear = el('g', {}, this.headG);
-    this.armsFront = el('g', { class: 'dk-arms' }, front || this.root);
+    this.armsFront = el('g', { class: 'tt-arms' }, front || this.root);
     // A gradient body colour cannot paint a thin stroke well; arms use a flat colour.
     const armCol = p.flat || p.body;
     this.arms = this.hands.map(() => ({
@@ -241,10 +241,10 @@ export class Dopakichi {
       digit: el('text', { 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'dk-digit' }, this.armsFront),
     }));
     const svg = this.layer.ownerSVGElement || this.layer;
-    if (!document.getElementById('dk-style')) el('style', { id: 'dk-style' }, svg).textContent = STYLE;
-    if (!document.getElementById('dk-rainbow')) {
+    if (!document.getElementById('tt-style')) el('style', { id: 'tt-style' }, svg).textContent = STYLE;
+    if (!document.getElementById('tt-rainbow')) {
       const defs = el('defs', {}, svg);
-      defs.innerHTML = '<linearGradient id="dk-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient>';
+      defs.innerHTML = '<linearGradient id="tt-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient>';
     }
     this.eyes = null; this.mouth = null;
     this.setFace(this.baseEyes || 'open', this.baseMouth || 'smile', true);
@@ -277,7 +277,7 @@ export class Dopakichi {
         // The right eye mirrors so pointed shapes face each other.
         g.innerHTML = `<g transform="scale(${i && kind === 'tight' ? -1 : 1} 1)">${EYE[kind](this.pal)}</g>`;
       });
-      this.irises = this.eyeGs.map((g) => g.querySelector('.dk-iris'));
+      this.irises = this.eyeGs.map((g) => g.querySelector('.tt-iris'));
       const [lift, tilt] = BROW[eyes === 'wink' ? 'happy' : eyes] || [0, 0];
       this.browLift.target = lift; this.browTilt.target = tilt;
     }
@@ -672,36 +672,36 @@ export class Dopakichi {
   destroy() { this.root.remove(); this.armsFront.remove(); }
 }
 
-// Standalone sprite image of Dopakichi for canvas particles (cheering pose).
-export function dopakichiSprite(palette = 'pink', size = 128) {
+// Standalone sprite image of Tiantian for canvas particles (cheering pose).
+export function tiantianSprite(palette = 'pink', size = 128) {
   const p = PALETTES[palette];
   const { eye, cheek, shoulder, brow } = G;
   const tip = (s) => ({ x: s * 66, y: -150 });
   const arm = (s) => `M${s * shoulder.x} ${shoulder.y} Q${s * 62} ${shoulder.y - 20} ${tip(s).x} ${tip(s).y}`;
   const svg = `<svg xmlns="${NS}" viewBox="-110 -190 220 196" width="${size}" height="${size * 196 / 220}">
-  <style>svg{--dkw:3.4}${STYLE}</style>
+  <style>svg{--ttw:3.4}${STYLE}</style>
   ${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="tt-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="tt-l" cx="${s * brow.x}" cy="${brow.y - 4}" rx="${brow.rx}" ry="${brow.ry}" fill="${p.body}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.happy()}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.grin}</g>
-  ${[-1, 1].map((s) => `<path d="${arm(s)}" fill="none" stroke="${INK}" stroke-width="${G.arm + 6.8}" stroke-linecap="round"/><path d="${arm(s)}" fill="none" stroke="${p.body}" stroke-width="${G.arm}" stroke-linecap="round"/><circle class="dk-l" cx="${tip(s).x}" cy="${tip(s).y}" r="${G.hand}" fill="${p.body}"/>`).join('')}
+  ${[-1, 1].map((s) => `<path d="${arm(s)}" fill="none" stroke="${INK}" stroke-width="${G.arm + 6.8}" stroke-linecap="round"/><path d="${arm(s)}" fill="none" stroke="${p.body}" stroke-width="${G.arm}" stroke-linecap="round"/><circle class="tt-l" cx="${tip(s).x}" cy="${tip(s).y}" r="${G.hand}" fill="${p.body}"/>`).join('')}
   </svg>`;
   const img = new Image();
   img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   return img;
 }
 
-// Static SVG markup of Dopakichi with a colour and costume (collection thumbnails).
-export function dopakichiSVG(palette = 'pink', costume = null) {
+// Static SVG markup of Tiantian with a colour and costume (collection thumbnails).
+export function tiantianSVG(palette = 'pink', costume = null) {
   const p = PALETTES[palette] || PALETTES.pink;
   const c = (costume && COSTUMES[costume]) || {};
   const { eye, cheek, brow } = G;
   const armCol = p.flat || p.body;
-  const rb = p.body.startsWith('url(') ? '<defs><linearGradient id="dk-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient></defs>' : '';
-  return `<svg xmlns="${NS}" viewBox="-112 -232 224 240" aria-hidden="true">${rb}<style>svg{--dkw:3.4}${STYLE}</style>
+  const rb = p.body.startsWith('url(') ? '<defs><linearGradient id="tt-rainbow" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff97bf"/><stop offset=".33" stop-color="#ffd452"/><stop offset=".66" stop-color="#5eddb8"/><stop offset="1" stop-color="#8fb4ff"/></linearGradient></defs>' : '';
+  return `<svg xmlns="${NS}" viewBox="-112 -232 224 240" aria-hidden="true">${rb}<style>svg{--ttw:3.4}${STYLE}</style>
   ${c.back || ''}${tailSVG(p)}${footSVG(p, -1)}${footSVG(p, 1)}${bodySVG(p)}${earSVG(p, -1)}${earSVG(p, 1)}${headSVG(p)}
-  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="dk-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="dk-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
+  ${[-1, 1].map((s) => `<g transform="scale(${s} 1)"><ellipse cx="${cheek.x}" cy="${cheek.y}" rx="${cheek.rx}" ry="${cheek.ry}" fill="${p.cheek}" opacity=".82"/><path class="tt-t" d="${WHISK}" fill="none" opacity=".55"/></g><ellipse class="tt-l" cx="${s * brow.x}" cy="${brow.y}" rx="${brow.rx}" ry="${brow.ry}" fill="${armCol}"/><g transform="translate(${s * eye.x} ${eye.y})">${EYE.open(p.body.startsWith('url(') ? { body: armCol } : p)}</g>`).join('')}
   <g transform="translate(0 ${G.mouthY})">${MOUTH.smile}</g>
-  ${[-1, 1].map((s) => `<circle class="dk-l" cx="${s * G.rest.x}" cy="${G.rest.y}" r="${G.hand}" fill="${armCol}"/>`).join('')}
+  ${[-1, 1].map((s) => `<circle class="tt-l" cx="${s * G.rest.x}" cy="${G.rest.y}" r="${G.hand}" fill="${armCol}"/>`).join('')}
   ${c.face || ''}${c.head || ''}</svg>`;
 }
 

@@ -1,5 +1,5 @@
 // Full-screen WebGL backdrop: sunburst rays that grow into a rainbow tunnel of
-// Dopakichi silhouettes. Falls back to a CSS conic gradient without WebGL.
+// Tiantian silhouettes. Falls back to a CSS conic gradient without WebGL.
 
 const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`;
 const FRAG = `precision highp float;
@@ -7,7 +7,7 @@ uniform vec2 uRes; uniform vec2 uCenter; uniform float uTime, uE, uKick, uFlash,
 vec3 hsv(float h, float s, float v){ vec3 k = clamp(abs(mod(h*6. + vec3(0.,4.,2.), 6.) - 3.) - 1., 0., 1.); return v * mix(vec3(1.), k, s); }
 float hash(vec2 c){ return fract(sin(dot(c, vec2(127.1, 311.7))) * 43758.5453); }
 mat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
-// Dopakichi head silhouette: a wide rounded head with large side ears.
+// Tiantian head silhouette: a wide rounded head with large side ears.
 float dopa(vec2 p){
   vec2 q = (p - vec2(0., -0.02)) / vec2(0.2, 0.15);
   float h = (length(q) - 1.) * 0.15;
@@ -18,7 +18,7 @@ float dopa(vec2 p){
 // Beat rings travelling outward (shared).
 float beatRings(float r, float t, float E){ return smoothstep(.35, .7, E) * smoothstep(0.035, 0., abs(fract(r * 2.4 - t * 0.8) - .5) - .45); }
 
-// 0: sunburst rays -> rainbow -> tunnel of Dopakichi faces.
+// 0: sunburst rays -> rainbow -> tunnel of Tiantian faces.
 vec3 classic(vec2 p, float r, float a, float E, float t){
   float nr = floor(mix(10., 20., clamp(E, 0., 1.)));
   float tw = sin(r * 6. - t * 1.5) * 0.25 * smoothstep(.6, 1., E);

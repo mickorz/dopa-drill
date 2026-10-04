@@ -1,5 +1,5 @@
 // Unlockable show (id041): backgrounds, correct marks, particles, music,
-// Dopakichi's costume and colour, the crowd and the finale. Each item is the
+// Tiantian's costume and colour, the crowd and the finale. Each item is the
 // reward of one trophy (never random), so what is unlocked follows from the
 // trophies earned; only the player's choice per category is saved.
 import { TROPHY } from './trophies.js';
@@ -10,7 +10,7 @@ export const CATS = [
   { key: 'particle', name: '纸屑' },
   { key: 'music', name: '音乐' },
   { key: 'costume', name: '换装' },
-  { key: 'color', name: '多巴吉的颜色' },
+  { key: 'color', name: '甜甜的颜色' },
   { key: 'crowd', name: '观众' },
   { key: 'finale', name: '压轴演出' },
 ];
@@ -32,7 +32,7 @@ addItems([
   { id: 'costume:none', cat: 'costume', name: '无', base: true },
   { id: 'color:pink', cat: 'color', name: '奶白色', base: true },
   { id: 'crowd:classic', cat: 'crowd', name: '彩色观众', base: true },
-  { id: 'finale:classic', cat: 'finale', name: '巨型多巴吉', base: true },
+  { id: 'finale:classic', cat: 'finale', name: '巨型甜甜', base: true },
 ]);
 // id041: one sample per category, to prove the pipeline end to end.
 // Rewards follow effort and coming back (plays, days, streaks, stars earned by

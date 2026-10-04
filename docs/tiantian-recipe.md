@@ -1,6 +1,6 @@
-# 甜甜（Dopakichi）布偶猫 SVG 拼装配方 · V5
+# 甜甜（Tiantian）布偶猫 SVG 拼装配方 · V5
 
-> 源文件：`docs/dopakichi.svg`（造型原典，纯矢量手写）
+> 源文件：`docs/tiantian.svg`（造型原典，纯矢量手写）
 > V5 要点：clipPath 锁定耳内毛束、耳根盖片衔接、端正对称脸（无歪头）、右睫毛 = 左睫毛镜像、蓝眼玻璃质感、短胖身体、蓬松灰尾、粉结金铃
 
 ## 1. 全局设置
@@ -92,5 +92,5 @@
 ## 5. 本地预览
 
 ```bash
-qlmanage -t -s 1024 -o "$TMPDIR" docs/dopakichi.svg && open "$TMPDIR/dopakichi.svg.png"
+qlmanage -t -s 1024 -o "$TMPDIR" docs/tiantian.svg && open "$TMPDIR/tiantian.svg.png"
 ```
