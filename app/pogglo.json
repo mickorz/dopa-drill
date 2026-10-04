@@ -1,0 +1,10 @@
+{
+  "title": "甜甜练习 (Tiantian Drill)",
+  "slug": "tiantian-drill",
+  "orientation": "landscape",
+  "description": "A math drill where every correct answer turns up the show: Tiantian the ragdoll cat carries your digits into the column, and confetti, music and parades build toward a full festival finale. Grades 1-6 arithmetic with skill trees, daily quests and trophies. Wrong answers never end the run.",
+  "controls": "Type 0-9 and press Enter to answer, Backspace to erase, Esc to go back — or tap the on-screen number pad. Everything else is point-and-click.",
+  "category": "thinky",
+  "platforms": "both",
+  "ai_author": "OpenCode,glm-5.3"
+}
